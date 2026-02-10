@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 
 rem count = number of files in this dir (including this file)
 set /a count=0
-for %%f in ("%~dp0*") do (
+for /r "%~dp0" %%f in (*) do (
   rem don't count this file or desktop.ini
   if /i not "%%~nxf"=="%~nx0" if /i not "%%~nxf"=="desktop.ini" (
     set /a count+=1
@@ -24,9 +24,9 @@ rem in case it picks this file or desktop.ini
 rem get random index
 set /a "rand=(%RANDOM% %% count)"
 
-rem find that index file and open it
+rem open the file at that index
 set /a current=0
-for %%f in ("%~dp0*") do (
+for /r "%~dp0" %%f in (*) do (
   if !current!==%rand% (
     rem check against this file or desktop.ini
     if /i "%%~nxf"=="%~nx0" if /i "%%~nxf"=="desktop.ini" (
