@@ -5,8 +5,8 @@ setlocal enabledelayedexpansion
 rem count = number of files in this dir (including this file)
 set /a count=0
 for /r "%~dp0" %%f in (*) do (
-  rem don't count this file or desktop.ini
-  if /i not "%%~nxf"=="%~nx0" if /i not "%%~nxf"=="desktop.ini" (
+  rem don't count these files
+  if /i not "%%~nxf"=="%~nx0" if /i not "%%~nxf"=="desktop.ini" if /i not "%%~nxf"=="install.bat" if /i not "%%~nxf"=="uninstall.bat" (
     set /a count+=1
   )
 )
@@ -18,9 +18,6 @@ if %count%==0 (
   exit /b 0
 )
 
-rem in case it picks this file or desktop.ini
-:tryAgain
-
 rem get random index
 set /a "rand=(%RANDOM% %% count)"
 
@@ -28,12 +25,16 @@ rem open the file at that index
 set /a current=0
 for /r "%~dp0" %%f in (*) do (
   if !current!==%rand% (
-    rem check against this file or desktop.ini
-    if /i "%%~nxf"=="%~nx0" if /i "%%~nxf"=="desktop.ini" (
-      goto :tryAgain
+    rem only open valid files
+    if /i not "%%~nxf"=="%~nx0" if /i not "%%~nxf"=="desktop.ini" if /i not "%%~nxf"=="install.bat" if /i not "%%~nxf"=="uninstall.bat" (
+      start "" "%%f"
+      exit /b 0
+
+    ) else (
+      echo hi
+      pause
+      exit /b 0
     )
-    start "" "%%f"
-    exit /b 0
   )
 
   rem only ++ current if it's on a valid file
