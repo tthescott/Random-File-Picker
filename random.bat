@@ -19,7 +19,7 @@ if %count%==0 (
 )
 
 rem get random index
-set /a "rand=(%RANDOM% %% count)"
+set /a "rand=(%RANDOM% * %RANDOM% %% count)"
 
 rem open the file at that index
 set /a current=0
