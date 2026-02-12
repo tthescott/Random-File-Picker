@@ -2,7 +2,7 @@
 rem allows variable value update inside for loops
 setlocal enabledelayedexpansion
 
-rem count = number of files in this dir (including this file)
+rem count = number of valid files in this folder and sub-folders
 set /a count=0
 for /r "%~dp0" %%f in (*) do (
   rem don't count these files
@@ -19,30 +19,22 @@ if %count%==0 (
 )
 
 rem get random index
-set /a "rand=(%RANDOM% * %RANDOM% %% count)"
+set /a "rand=((%RANDOM% * 32768) + %RANDOM%) %% count"
 
 rem open the file at that index
 set /a current=0
 for /r "%~dp0" %%f in (*) do (
-  if !current!==%rand% (
-    rem only open valid files
-    if /i not "%%~nxf"=="%~nx0" if /i not "%%~nxf"=="desktop.ini" if /i not "%%~nxf"=="install.bat" if /i not "%%~nxf"=="uninstall.bat" (
+  rem ignore invalid files
+  if /i not "%%~nxf"=="%~nx0" if /i not "%%~nxf"=="desktop.ini" if /i not "%%~nxf"=="install.bat" if /i not "%%~nxf"=="uninstall.bat" (
+    if !current!==%rand% (
       start "" "%%f"
       exit /b 0
-
-    ) else (
-      echo hi
-      pause
-      exit /b 0
     )
-  )
-
-  rem only ++ current if it's on a valid file
-  rem ensures all files are reachable since only valid files were counted
-  if /i not "%%~nxf"=="%~nx0" if /i not "%%~nxf"=="desktop.ini" (
     set /a current+=1
   )
 )
 
-rem in case it doesn't find a matching file index
+rem in case it doesn't find a matching file index (shouldn't be possible)
+echo I broke :(
+pause
 exit /b 1
